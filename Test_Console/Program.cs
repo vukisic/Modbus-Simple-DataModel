@@ -29,7 +29,7 @@ namespace Test_Console
                 Console.WriteLine($"{item.TypeOfRegister} {item.NumberOfRegister} {item.StartAddress} {item.FloatingPointPosition} {item.MinValue} {item.MaxValue} {item.InitialValue} {item.Type} {item.Description}");
             }
 
-            Console.WriteLine("\n\n\n");
+            Console.WriteLine();
 
             ConfigurationDevicesConverter converter = new ConfigurationDevicesConverter();
             var devs = converter.ConvertToDevices(config);
