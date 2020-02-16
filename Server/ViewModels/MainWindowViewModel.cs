@@ -23,6 +23,7 @@ namespace Server.ViewModels
 
         private IDeviceValidator validator;
         private INotificationService notificationService;
+        private IDataRepository repository;
         private DataGrid grid;
 
         
@@ -39,10 +40,11 @@ namespace Server.ViewModels
 
         #endregion
 
-        public MainWindowViewModel(IDeviceValidator validator, INotificationService notification)
+        public MainWindowViewModel(IDeviceValidator validator, INotificationService notification, IDataRepository repo)
         {
             this.validator = validator;
             this.notificationService = notification;
+            this.repository = repo;
             StartCommand = new MyICommand(OnStart);
             StopCommand = new MyICommand(OnStop);
             Items = new BindingList<DeviceModel>();
@@ -68,22 +70,26 @@ namespace Server.ViewModels
             var converter = new ConfigurationToModelsConverter();
             var devs = converter.ConvertToDevices(config);
 
-
+            repository.RemoveAll();
             foreach (var item in devs.DigitalOutputs)
             {
                 Items.Add(item);
+                repository.Add(item);
             }
             foreach (var item in devs.DigitalInputs)
             {
                 Items.Add(item);
+                repository.Add(item);
             }
             foreach (var item in devs.AnalogInputs)
             {
                 Items.Add(item);
+                repository.Add(item);
             }
             foreach (var item in devs.AnalogOutputs)
             {
                 Items.Add(item);
+                repository.Add(item);
             }
         }
 
@@ -99,6 +105,33 @@ namespace Server.ViewModels
             }
         }
 
+        public void UpdateAllDevices()
+        {
+            foreach (var item in Items)
+            {
+                if (item is DigitalInputModel)
+                {
+                    var value = (item as DigitalInputModel).Value;
+                    repository.Update(item as DigitalInputModel, value);
+                }
+                else if (item is DigitalOutputModel)
+                {
+                    var value = (item as DigitalOutputModel).Value;
+                    repository.Update(item as DigitalOutputModel, (byte)value);
+                }
+                else if (item is AnalogInputModel)
+                {
+                    var value = (item as AnalogInputModel).Value;
+                    repository.Update(item as AnalogInputModel, value);
+                    
+                }
+                else if (item is AnalogOutputModel)
+                {
+                    var value = (item as AnalogOutputModel).Value;
+                    repository.Update(item as AnalogOutputModel, value);
+                }
+            }
+        }
         #endregion
 
         #region Commands & Events
@@ -118,18 +151,30 @@ namespace Server.ViewModels
         public void SaveChanges(DataGridCellEditEndingEventArgs args)
         {
             var device = args.EditingElement.DataContext;
-            var value = Convert.ToInt32((args.EditingElement as TextBox).Text);
+            var value = Convert.ToDouble((args.EditingElement as TextBox).Text);
             var index = args.Row.GetIndex();
 
             if (device is DigitalInput)
             {
                 (Items[index] as DigitalInputModel).Value = (byte)value;
-
+                repository.Update(Items[index] as DigitalInputModel, (byte)value);
             }
-            if (device is DigitalOutput)
+            else if (device is DigitalOutput)
             {
                 (Items[index] as DigitalOutputModel).Value = (byte)value;
+                repository.Update(Items[index] as DigitalOutputModel, (byte)value);
             }
+            else if (device is AnalogOutput)
+            {
+                (Items[index] as AnalogOutputModel).Value = value;
+                repository.Update(Items[index] as AnalogOutputModel, value);
+            }
+            else if (device is AnalogInput)
+            {
+                (Items[index] as AnalogInputModel).Value = value;
+                repository.Update(Items[index] as AnalogInputModel, value);
+            }
+
 
             if (validator.Validate(device as DeviceModel, value))
                 args.Row.Background = Brushes.MediumSeaGreen;
@@ -155,6 +200,7 @@ namespace Server.ViewModels
                 SimulationLogic();
                 grid.Dispatcher.Invoke(() =>
                 {
+                    UpdateAllDevices();
                     CheckRowStatus();
                 });
                 if (!Simulation)
@@ -171,11 +217,13 @@ namespace Server.ViewModels
             {
                 if (item is DigitalInputModel)
                 {
-                    (item as DigitalInputModel).Value = (byte)(rand.Next(0, 10) % 2);
+                    var value = (byte)(rand.Next(0, 10) % 2);
+                    (item as DigitalInputModel).Value = (byte)value;
                 }
                 else if (item is DigitalOutputModel)
                 {
-                    (item as DigitalOutputModel).Value = (byte)(rand.Next(0, 10) % 2);
+                    var value = (byte)(rand.Next(0, 10) % 2);
+                    (item as DigitalOutputModel).Value = (byte)value;
                 }
                 else if (item is AnalogInputModel)
                 {

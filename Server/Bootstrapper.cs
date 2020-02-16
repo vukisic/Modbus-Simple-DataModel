@@ -24,6 +24,7 @@ namespace Server
             container
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IDeviceValidator, DeviceValidator>()
+                .Singleton<IDataRepository, DataRepository>()
                 .Singleton<INotificationService, NotificationService>();
 
             GetType().Assembly.GetTypes()

@@ -1,4 +1,6 @@
-﻿namespace Common.Devices
+﻿using System;
+
+namespace Common.Devices
 {
     public class AnalogInput : Device
     {

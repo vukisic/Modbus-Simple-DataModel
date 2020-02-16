@@ -11,7 +11,7 @@
 
         public DigitalOutputModel() : base() { }
 
-        public DigitalOutputModel(string typeOfRegister, byte address, string type, string description, byte maxValue, byte minValue, byte initialValue, byte value) : base(typeOfRegister, address, type, description)
+        public DigitalOutputModel(string typeOfRegister, int address, string type, string description, byte maxValue, byte minValue, byte initialValue, byte value) : base(typeOfRegister, address, type, description)
         {
             MaxValue = maxValue;
             MinValue = minValue;
