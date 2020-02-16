@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Common.Devices
+﻿namespace Common.Devices
 {
     public class DigitalOutput : Device
     {

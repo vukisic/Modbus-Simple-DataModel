@@ -2,7 +2,7 @@
   "Port": 5000,
   "Items": [
     {
-      "TypeOfRegister": "DO_REG",
+      "TypeOfRegister": "DI_REG",
       "NumberOfRegister": 10,
       "StartAddress": 0,
       "FloatingPointPosition": 0,

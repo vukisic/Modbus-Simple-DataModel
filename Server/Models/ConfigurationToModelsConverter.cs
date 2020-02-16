@@ -1,23 +1,22 @@
-﻿using Common.Devices;
-using Common.ConfigurationTools;
+﻿using Common.ConfigurationTools;
 using System;
 
-namespace Common.Converters
+namespace Server.Models
 {
-	public class ConfigurationDevicesConverter
+	public class ConfigurationToModelsConverter
 	{
-		public AllDevices ConvertToDevices(Configuration config)
+		public AllDevicesModel ConvertToDevices(Configuration config)
 		{
 			try
 			{
-				AllDevices devs = new AllDevices();
+				AllDevicesModel devs = new AllDevicesModel();
 				foreach (var item in config.Items)
 				{
-					if(item.TypeOfRegister == RegisterType.DigitalInput)
+					if (item.TypeOfRegister == RegisterType.DigitalInput)
 					{
 						for (int i = 0; i < item.NumberOfRegister; i++)
 						{
-							devs.DigitalInputs.Add(new DigitalInput()
+							devs.DigitalInputs.Add(new DigitalInputModel()
 							{
 								Description = item.Description,
 								InitialValue = (byte)item.InitialValue,
@@ -34,7 +33,7 @@ namespace Common.Converters
 					{
 						for (int i = 0; i < item.NumberOfRegister; i++)
 						{
-							devs.DigitalOutputs.Add(new DigitalOutput()
+							devs.DigitalOutputs.Add(new DigitalOutputModel()
 							{
 								Description = item.Description,
 								InitialValue = (byte)item.InitialValue,
@@ -51,7 +50,7 @@ namespace Common.Converters
 					{
 						for (int i = 0; i < item.NumberOfRegister; i++)
 						{
-							devs.AnalogInputs.Add(new AnalogInput()
+							devs.AnalogInputs.Add(new AnalogInputModel()
 							{
 								Description = item.Description,
 								InitialValue = item.InitialValue,
@@ -69,7 +68,7 @@ namespace Common.Converters
 					{
 						for (int i = 0; i < item.NumberOfRegister; i++)
 						{
-							devs.AnalogOutputs.Add(new AnalogOutput()
+							devs.AnalogOutputs.Add(new AnalogOutputModel()
 							{
 								Description = item.Description,
 								InitialValue = item.InitialValue,

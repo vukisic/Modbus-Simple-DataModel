@@ -1,14 +1,16 @@
-﻿namespace Common.Devices
+﻿using Server.Core;
+
+namespace Server.Models
 {
-    public class Device
+    public class DeviceModel : BindableBase
     {
         public string TypeOfRegister { get; set; }
         public int Address { get; set; }
         public string Type { get; set; }
         public string Description { get; set; }
 
-        public Device() { }
-        public Device(string typeOfRegister, int address, string type, string description)
+        public DeviceModel() { }
+        public DeviceModel(string typeOfRegister, int address, string type, string description)
         {
             TypeOfRegister = typeOfRegister;
             Address = address;
