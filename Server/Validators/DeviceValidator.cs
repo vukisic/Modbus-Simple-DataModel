@@ -2,7 +2,7 @@
 
 namespace Server.Validators
 {
-    public class DeviceValidator
+    public class DeviceValidator : IDeviceValidator
     {
         public bool Validate(DeviceModel device, double value)
         {

@@ -2,6 +2,7 @@
 using Common.ConfigurationTools;
 using Common.Devices;
 using Server.Models;
+using Server.Services;
 using Server.Validators;
 using System;
 using System.ComponentModel;
@@ -20,7 +21,8 @@ namespace Server.ViewModels
         private BindingList<DeviceModel> items;
         public BindingList<DeviceModel> Items { get { return items; } set { items = value; OnPropertyChanged("Items"); } }
 
-        private DeviceValidator validator;
+        private IDeviceValidator validator;
+        private INotificationService notificationService;
         private DataGrid grid;
 
         
@@ -37,14 +39,25 @@ namespace Server.ViewModels
 
         #endregion
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(IDeviceValidator validator, INotificationService notification)
         {
-            validator = new DeviceValidator();
+            this.validator = validator;
+            this.notificationService = notification;
             StartCommand = new MyICommand(OnStart);
             StopCommand = new MyICommand(OnStop);
             Items = new BindingList<DeviceModel>();
             SimulationStatus = "InActive";
-            LoadFromConfiguration();
+            try
+            {
+                LoadFromConfiguration();
+
+            }
+            catch (Exception)
+            {
+
+                notificationService.ShowNotification("Server", "Error occured while reading configuration", Notifications.Wpf.NotificationType.Error);
+            }
+            
         }
 
         #region Helpers

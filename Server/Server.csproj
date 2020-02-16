@@ -64,6 +64,9 @@
     <Reference Include="MaterialDesignThemes.Wpf, Version=3.0.1.920, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MaterialDesignThemes.3.0.1\lib\net45\MaterialDesignThemes.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="Notifications.Wpf, Version=0.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Notifications.Wpf.0.1.1\lib\net45\Notifications.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -99,7 +102,10 @@
     <Compile Include="Models\DeviceModel.cs" />
     <Compile Include="Models\DigitalInputModel.cs" />
     <Compile Include="Models\DigitalOutputModel.cs" />
+    <Compile Include="Services\INotificationService.cs" />
+    <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Validators\DeviceValidator.cs" />
+    <Compile Include="Validators\IDeviceValidator.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\MainWindowView.xaml.cs">
       <DependentUpon>MainWindowView.xaml</DependentUpon>
