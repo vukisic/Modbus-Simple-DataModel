@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Common.Commands
 {
-    public class AnalogCommand
+    public class AnalogCommand : DeviceCommand
     {
         public double Value { get; set; }
+
     }
 }

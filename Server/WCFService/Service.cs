@@ -1,5 +1,8 @@
-﻿using Common.Commands;
+﻿using Caliburn.Micro;
+using Common.Commands;
 using Common.Devices;
+using Server.Models;
+using Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,19 +13,37 @@ namespace Server.WCFService
 {
     public class Service : IService
     {
+        private IDataRepository repo;
+
+        public Service()
+        {
+            repo = IoC.Get<IDataRepository>();
+        }
+
         public void CommandAnalogs(AnalogCommand command)
         {
-            throw new NotImplementedException();
+            var all = repo.GetAllDeviceBindings();
+            var result = all.SingleOrDefault(x => x.Address == command.Address);
+            if(result != null)
+            {
+                repo.Update(result as AnalogOutputModel, command.Value);
+            }
+           
         }
 
         public void CommandDigitals(DigitalCommand command)
         {
-            throw new NotImplementedException();
+            var all = repo.GetAllDeviceBindings();
+            var result = all.SingleOrDefault(x => x.Address == command.Address);
+            if (result != null)
+            {
+                repo.Update(result as DigitalOutputModel, command.Value);
+            }
         }
 
         public AllDevices GetAllDevices()
         {
-            throw new NotImplementedException();
+            return repo.GetAll();
         }
     }
 }

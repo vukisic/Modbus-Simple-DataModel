@@ -9,10 +9,14 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Common.WCF;
 using static Server.Core.MyCommand;
+using System.Net;
+using Server.WCFService;
 
 namespace Server.ViewModels
 {
@@ -21,6 +25,9 @@ namespace Server.ViewModels
         #region Properties
         private BindingList<DeviceModel> items;
         public BindingList<DeviceModel> Items { get { return items; } set { items = value; OnPropertyChanged("Items"); } }
+
+        private int servicePort;
+        private Common.WCF.WCFService service;
 
         private IDeviceValidator validator;
         private INotificationService notificationService;
@@ -56,12 +63,16 @@ namespace Server.ViewModels
             try
             {
                 LoadFromConfiguration();
+                service = new Common.WCF.WCFService("WCFService", new IPEndPoint(IPAddress.Loopback, servicePort), typeof(Service), typeof(IService));
+                service.Create();
+                service.Open();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                notificationService.ShowNotification("Server", "Error occured while reading configuration", Notifications.Wpf.NotificationType.Error);
+                notificationService.ShowNotification("Server", $"Error: {ex.Message}, ST: {ex.StackTrace}", Notifications.Wpf.NotificationType.Error);
             }
+
             
         }
 
@@ -70,6 +81,7 @@ namespace Server.ViewModels
         {
             ConfigurationParser parser = new ConfigurationParser("../../../confguration.json");
             var config = parser.Read();
+            servicePort = config.Port;
             var converter = new ConfigurationToModelsConverter();
             var devs = converter.ConvertToDevices(config);
 
@@ -165,8 +177,15 @@ namespace Server.ViewModels
             endSignal = false;
             updateThread.Abort();
             updateThread = null;
-            simulationThread.Abort();
-            simulationThread = null;
+            if(simulationThread != null)
+            {
+                simulationThread.Abort();
+                simulationThread = null;
+            }
+               
+            service.Close();
+            service.Dispose();
+            service = null;
         }
         #endregion
 
