@@ -3,6 +3,7 @@ using Server.Context;
 using Server.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -187,6 +188,15 @@ namespace Server.Services
             context.Database.ExecuteSqlCommand("TRUNCATE TABLE DigitalInputs");
             context.Database.ExecuteSqlCommand("TRUNCATE TABLE DigitalOutputs");
             context.Database.ExecuteSqlCommand("TRUNCATE TABLE DeviceModels");
+        }
+
+        public BindingList<DeviceModel> GetAllDeviceBindings()
+        {
+            var list = context.DeviceModels.ToList();
+            var blist = new BindingList<DeviceModel>();
+            foreach (var item in list)
+                blist.Add(item);
+            return blist;
         }
     }
 }

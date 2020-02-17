@@ -19,7 +19,7 @@
         TextOptions.TextRenderingMode="Auto"        
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Controls:ButtonHelper.PreserveTextCase="True">
+        Controls:ButtonHelper.PreserveTextCase="True" cal:Message.Attach="[Event Closing]=[Action Close($eventArgs)]">
     <!--<Window.Resources>
         <Converters:ValueToColorConverter x:Key="ValueToColorConverter"/>
     </Window.Resources>-->

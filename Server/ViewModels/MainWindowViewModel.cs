@@ -6,6 +6,7 @@ using Server.Services;
 using Server.Validators;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
@@ -28,8 +29,10 @@ namespace Server.ViewModels
 
         
         private Thread simulationThread;
+        private Thread updateThread;
         private string simulationStatus;
         private bool simulation;
+        private bool endSignal = true;
         public bool Simulation { get { return simulation; } set { simulation = value; OnPropertyChanged("Simulation"); } }
         public string SimulationStatus { get { return simulationStatus; } set { simulationStatus = value; OnPropertyChanged("SimulationStatus"); } }
 
@@ -48,11 +51,11 @@ namespace Server.ViewModels
             StartCommand = new MyICommand(OnStart);
             StopCommand = new MyICommand(OnStop);
             Items = new BindingList<DeviceModel>();
+            
             SimulationStatus = "InActive";
             try
             {
                 LoadFromConfiguration();
-
             }
             catch (Exception)
             {
@@ -104,34 +107,6 @@ namespace Server.ViewModels
                     row.Background = Brushes.IndianRed;
             }
         }
-
-        public void UpdateAllDevices()
-        {
-            foreach (var item in Items)
-            {
-                if (item is DigitalInputModel)
-                {
-                    var value = (item as DigitalInputModel).Value;
-                    repository.Update(item as DigitalInputModel, value);
-                }
-                else if (item is DigitalOutputModel)
-                {
-                    var value = (item as DigitalOutputModel).Value;
-                    repository.Update(item as DigitalOutputModel, (byte)value);
-                }
-                else if (item is AnalogInputModel)
-                {
-                    var value = (item as AnalogInputModel).Value;
-                    repository.Update(item as AnalogInputModel, value);
-                    
-                }
-                else if (item is AnalogOutputModel)
-                {
-                    var value = (item as AnalogOutputModel).Value;
-                    repository.Update(item as AnalogOutputModel, value);
-                }
-            }
-        }
         #endregion
 
         #region Commands & Events
@@ -154,27 +129,22 @@ namespace Server.ViewModels
             var value = Convert.ToDouble((args.EditingElement as TextBox).Text);
             var index = args.Row.GetIndex();
 
-            if (device is DigitalInput)
+            if (device is DigitalInputModel)
             {
-                (Items[index] as DigitalInputModel).Value = (byte)value;
                 repository.Update(Items[index] as DigitalInputModel, (byte)value);
             }
-            else if (device is DigitalOutput)
+            else if (device is DigitalOutputModel)
             {
-                (Items[index] as DigitalOutputModel).Value = (byte)value;
                 repository.Update(Items[index] as DigitalOutputModel, (byte)value);
             }
-            else if (device is AnalogOutput)
+            else if (device is AnalogOutputModel)
             {
-                (Items[index] as AnalogOutputModel).Value = value;
                 repository.Update(Items[index] as AnalogOutputModel, value);
             }
-            else if (device is AnalogInput)
+            else if (device is AnalogInputModel)
             {
-                (Items[index] as AnalogInputModel).Value = value;
                 repository.Update(Items[index] as AnalogInputModel, value);
             }
-
 
             if (validator.Validate(device as DeviceModel, value))
                 args.Row.Background = Brushes.MediumSeaGreen;
@@ -186,10 +156,69 @@ namespace Server.ViewModels
         {
             grid = ((args.OriginalSource as Grid).Children[0] as DataGrid);
             CheckRowStatus();
+            updateThread = new Thread(Updater);
+            updateThread.Start();
+        }
+
+        public void Close(object args)
+        {
+            endSignal = false;
+            updateThread.Abort();
+            updateThread = null;
+            simulationThread.Abort();
+            simulationThread = null;
         }
         #endregion
 
-        #region Thread
+        #region Threads
+        public void Updater()
+        {
+            while(endSignal)
+            {
+                var res = repository.GetAllDeviceBindings();
+                foreach (var item in res)
+                {
+                    if (item is DigitalInputModel)
+                    { 
+                        var itemToUpdate = Items.Single(x => x.Address == item.Address) as DigitalInputModel;
+                        var newItem = item as DigitalInputModel;
+                        if (itemToUpdate.Value != newItem.Value)
+                            itemToUpdate.Value = newItem.Value;
+                    }
+                    else if (item is DigitalOutputModel)
+                    {
+                        var itemToUpdate = Items.Single(x => x.Address == item.Address) as DigitalOutputModel;
+                        var newItem = item as DigitalOutputModel;
+                        if (itemToUpdate.Value != newItem.Value)
+                            itemToUpdate.Value = newItem.Value;
+                    }
+                    else if (item is AnalogInputModel)
+                    {
+                        var itemToUpdate = Items.Single(x => x.Address == item.Address) as AnalogInputModel;
+                        var newItem = item as AnalogInputModel;
+                        if (itemToUpdate.Value != newItem.Value)
+                            itemToUpdate.Value = newItem.Value;
+                    }
+                    else if (item is AnalogOutputModel)
+                    {
+                        var itemToUpdate = Items.Single(x => x.Address == item.Address) as AnalogOutputModel;
+                        var newItem = item as AnalogOutputModel;
+                        if (itemToUpdate.Value != newItem.Value)
+                            itemToUpdate.Value = newItem.Value;
+                    }
+                }
+
+                grid.Dispatcher.Invoke(() =>
+                {
+                    CheckRowStatus();
+                });
+                if (!endSignal)
+                    break;
+                Thread.Sleep(1000);
+            }
+            
+        }
+
         public void ThreadFunction()
         {
             Random rand = new Random();
@@ -198,11 +227,6 @@ namespace Server.ViewModels
             {
 
                 SimulationLogic();
-                grid.Dispatcher.Invoke(() =>
-                {
-                    UpdateAllDevices();
-                    CheckRowStatus();
-                });
                 if (!Simulation)
                     break;
                 Thread.Sleep(rand.Next(1000, 5000));
@@ -218,26 +242,26 @@ namespace Server.ViewModels
                 if (item is DigitalInputModel)
                 {
                     var value = (byte)(rand.Next(0, 10) % 2);
-                    (item as DigitalInputModel).Value = (byte)value;
+                    repository.Update((item as DigitalInputModel), value);
                 }
                 else if (item is DigitalOutputModel)
                 {
                     var value = (byte)(rand.Next(0, 10) % 2);
-                    (item as DigitalOutputModel).Value = (byte)value;
+                    repository.Update((item as DigitalOutputModel), value);
                 }
                 else if (item is AnalogInputModel)
                 {
                     var device = item as AnalogInputModel;
                     var lowerBound = (int)(device.MinValue) + 1000;
                     var upperBound = (int)(device.MaxValue) + 1000;
-                    (item as AnalogInputModel).Value = (double)(rand.Next(lowerBound, upperBound));
+                    repository.Update((item as AnalogInputModel), (double)(rand.Next(lowerBound, upperBound)));
                 }
                 else if (item is AnalogOutputModel)
                 {
                     var device = item as AnalogOutputModel;
                     var lowerBound = (int)(device.MinValue) + 1000;
                     var upperBound = (int)(device.MaxValue) + 1000;
-                    (item as AnalogOutputModel).Value = (double)(rand.Next(lowerBound, upperBound));
+                    repository.Update((item as AnalogOutputModel), (double)(rand.Next(lowerBound, upperBound)));
                 }
             }
         }
@@ -259,8 +283,9 @@ namespace Server.ViewModels
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #endregion
 
+
+        #endregion
 
     }
 }

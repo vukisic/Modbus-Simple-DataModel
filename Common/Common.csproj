@@ -45,6 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\AnalogCommand.cs" />
+    <Compile Include="Commands\CommandManager.cs" />
+    <Compile Include="Commands\DeviceCommand.cs" />
+    <Compile Include="Commands\DigitalCommand.cs" />
     <Compile Include="ConfigurationTools\Configuration.cs" />
     <Compile Include="ConfigurationTools\ConfigurationItem.cs" />
     <Compile Include="ConfigurationTools\ConfigurationParser.cs" />

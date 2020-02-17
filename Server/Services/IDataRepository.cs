@@ -2,6 +2,7 @@
 using Server.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,8 @@ namespace Server.Services
         bool Update(DigitalOutputModel device, byte value);
 
         AllDevices GetAll();
+
+        BindingList<DeviceModel> GetAllDeviceBindings();
 
         void RemoveAll();
     }

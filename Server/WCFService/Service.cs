@@ -1,4 +1,5 @@
-﻿using Common.Devices;
+﻿using Common.Commands;
+using Common.Devices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,16 @@ namespace Server.WCFService
 {
     public class Service : IService
     {
+        public void CommandAnalogs(AnalogCommand command)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CommandDigitals(DigitalCommand command)
+        {
+            throw new NotImplementedException();
+        }
+
         public AllDevices GetAllDevices()
         {
             throw new NotImplementedException();

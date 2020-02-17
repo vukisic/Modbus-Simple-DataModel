@@ -8,8 +8,8 @@
     /// </summary>
     public static class RegisterType
     {
-        public const string DigitalInput = "DO_REG";
-        public const string DigitalOutput = "DI_REG";
+        public const string DigitalInput = "DI_REG";
+        public const string DigitalOutput = "DO_REG";
         public const string AnalogInput = "IN_REG";
         public const string AnalogOutput = "HR_INT";
     }

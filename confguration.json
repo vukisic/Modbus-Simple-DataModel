@@ -1,49 +1,49 @@
 {
-  "Port": 5000,
-  "Items": [
-    {
-      "TypeOfRegister": "DI_REG",
-      "NumberOfRegister": 10,
-      "StartAddress": 0,
-      "FloatingPointPosition": 0,
-      "MaxValue": 1,
-      "MinValue": 0,
-      "InitialValue": 1,
-      "Type": "DI",
-      "Description": "DigIn"
-    },
+	"Port": 5000,
+	"Items": [
+		{
+			"TypeOfRegister": "DI_REG",
+			"NumberOfRegister": 10,
+			"StartAddress": 0,
+			"FloatingPointPosition": 0,
+			"MaxValue": 1,
+			"MinValue": 0,
+			"InitialValue": 1,
+			"Type": "DI",
+			"Description": "DigIn"
+		},
 	{
-      "TypeOfRegister": "DO_REG",
-      "NumberOfRegister": 10,
-      "StartAddress": 1000,
-      "FloatingPointPosition": 0,
-      "MaxValue": 1,
-      "MinValue": 0,
-      "InitialValue": 0,
-      "Type": "DO",
-      "Description": "DigOut"
-    },
+			"TypeOfRegister": "DO_REG",
+			"NumberOfRegister": 10,
+			"StartAddress": 1000,
+			"FloatingPointPosition": 0,
+			"MaxValue": 1,
+			"MinValue": 0,
+			"InitialValue": 0,
+			"Type": "DO",
+			"Description": "DigOut"
+		},
 	{
-      "TypeOfRegister": "IN_REG",
-      "NumberOfRegister": 10,
-      "StartAddress": 2000,
-      "FloatingPointPosition": 0,
-      "MaxValue": 5000,
-      "MinValue": 1000,
-      "InitialValue": 1200,
-      "Type": "AI",
-      "Description": "AnaIn"
-    },
+			"TypeOfRegister": "IN_REG",
+			"NumberOfRegister": 10,
+			"StartAddress": 2000,
+			"FloatingPointPosition": 0,
+			"MaxValue": 5000,
+			"MinValue": 1000,
+			"InitialValue": 1200,
+			"Type": "AI",
+			"Description": "AnaIn"
+		},
 	{
-      "TypeOfRegister": "HR_INT",
-      "NumberOfRegister": 10,
-      "StartAddress": 3000,
-      "FloatingPointPosition": 0,
-      "MaxValue": 6000,
-      "MinValue": 200,
-      "InitialValue": 500,
-      "Type": "AO",
-      "Description": "AnaOut"
-    }
-  ]
+			"TypeOfRegister": "HR_INT",
+			"NumberOfRegister": 10,
+			"StartAddress": 3000,
+			"FloatingPointPosition": 0,
+			"MaxValue": 6000,
+			"MinValue": 200,
+			"InitialValue": 500,
+			"Type": "AO",
+			"Description": "AnaOut"
+		}
+	]
 }
