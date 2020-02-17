@@ -8,7 +8,7 @@
         public override void Up()
         {
             CreateTable(
-                "dbo.DeviceModels",
+                "dbo.Devices",
                 c => new
                     {
                         Address = c.Int(nullable: false),
@@ -86,7 +86,7 @@
             DropTable("dbo.DigitalInputs");
             DropTable("dbo.AnalogOutputs");
             DropTable("dbo.AnalogInputs");
-            DropTable("dbo.DeviceModels");
+            DropTable("dbo.Devices");
         }
     }
 }

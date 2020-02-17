@@ -1,14 +1,15 @@
 ﻿using Caliburn.Micro;
+using Client.Validator;
+using Client.ViewModels;
 using Common.Services;
-using Server.Services;
-using Server.Validators;
-using Server.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
-namespace Server
+namespace Client
 {
     public class Bootstrapper : BootstrapperBase
     {
@@ -23,10 +24,9 @@ namespace Server
         {
             container.Instance(container);
             container
-                .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IDeviceValidator, DeviceValidator>()
-                .Singleton<IDataRepository, DataRepository>()
-                .Singleton<INotificationService, NotificationService>();
+                .Singleton<INotificationService, NotificationService>()
+                .Singleton<IWindowManager, WindowManager>();
 
             GetType().Assembly.GetTypes()
             .Where(type => type.IsClass)

@@ -2,10 +2,11 @@
 {
     public class DigitalInput : Device
     {
+        private byte value;
         public byte MaxValue { get; set; }
         public byte MinValue { get; set; }
         public byte InitialValue { get; set; }
-        public byte Value { get; set; }
+        public byte Value { get { return value; } set { this.value = value; OnPropertyChanged("Value"); } }
 
         public DigitalInput() : base() { }
 

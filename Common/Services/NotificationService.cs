@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Services
+namespace Common.Services
 {
     public class NotificationService : INotificationService, IDisposable
     {
         private NotificationManager notificationManager;
-        
-        public  NotificationService()
+
+        public NotificationService()
         {
             notificationManager = new NotificationManager();
         }

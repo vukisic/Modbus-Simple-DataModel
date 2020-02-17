@@ -1,4 +1,4 @@
-﻿using Server.Models;
+﻿using Common.Devices;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -10,7 +10,7 @@ namespace Server.Context
 {
     public class AppDBContext : DbContext
     {
-        public DbSet<DeviceModel> DeviceModels { get; set; }
+        public DbSet<Device> Devices { get; set; }
 
         public AppDBContext() : base("ServerDB")
         {
@@ -19,25 +19,25 @@ namespace Server.Context
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AnalogInputModel>().Map(m =>
+            modelBuilder.Entity<AnalogInput>().Map(m =>
             {
                 m.MapInheritedProperties();
                 m.ToTable("AnalogInputs");
             });
 
-            modelBuilder.Entity<AnalogOutputModel>().Map(m =>
+            modelBuilder.Entity<AnalogOutput>().Map(m =>
             {
                 m.MapInheritedProperties();
                 m.ToTable("AnalogOutputs");
             });
 
-            modelBuilder.Entity<DigitalInputModel>().Map(m =>
+            modelBuilder.Entity<DigitalInput>().Map(m =>
             {
                 m.MapInheritedProperties();
                 m.ToTable("DigitalInputs");
             });
 
-            modelBuilder.Entity<DigitalOutputModel>().Map(m =>
+            modelBuilder.Entity<DigitalOutput>().Map(m =>
             {
                 m.MapInheritedProperties();
                 m.ToTable("DigitalOutputs");

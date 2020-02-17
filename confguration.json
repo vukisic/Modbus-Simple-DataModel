@@ -1,5 +1,6 @@
 {
 	"Port": 5000,
+	"AquisitionInterval": 1,
 	"Items": [
 		{
 			"TypeOfRegister": "DI_REG",
@@ -12,7 +13,7 @@
 			"Type": "DI",
 			"Description": "DigIn"
 		},
-	{
+		{
 			"TypeOfRegister": "DO_REG",
 			"NumberOfRegister": 10,
 			"StartAddress": 1000,
@@ -23,7 +24,7 @@
 			"Type": "DO",
 			"Description": "DigOut"
 		},
-	{
+		{
 			"TypeOfRegister": "IN_REG",
 			"NumberOfRegister": 10,
 			"StartAddress": 2000,
@@ -34,7 +35,7 @@
 			"Type": "AI",
 			"Description": "AnaIn"
 		},
-	{
+		{
 			"TypeOfRegister": "HR_INT",
 			"NumberOfRegister": 10,
 			"StartAddress": 3000,

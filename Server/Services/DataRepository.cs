@@ -1,6 +1,5 @@
 ﻿using Common.Devices;
 using Server.Context;
-using Server.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,16 +12,18 @@ namespace Server.Services
     public class DataRepository : IDataRepository
     {
         private AppDBContext context;
+        private object obj;
         public DataRepository()
         {
             context = new AppDBContext();
+            obj = new object();
         }
 
-        public bool Add(AnalogInputModel device)
+        public bool Add(AnalogInput device)
         {
             try
             {
-                context.DeviceModels.Add(device);
+                context.Devices.Add(device);
                 context.SaveChanges();
                 return true;
             }
@@ -33,11 +34,11 @@ namespace Server.Services
            
         }
 
-        public bool Add(AnalogOutputModel device)
+        public bool Add(AnalogOutput device)
         {
             try
             {
-                context.DeviceModels.Add(device);
+                context.Devices.Add(device);
                 context.SaveChanges();
                 return true;
             }
@@ -47,11 +48,11 @@ namespace Server.Services
             }
         }
 
-        public bool Add(DigitalInputModel device)
+        public bool Add(DigitalInput device)
         {
             try
             {
-                context.DeviceModels.Add(device);
+                context.Devices.Add(device);
                 context.SaveChanges();
                 return true;
             }
@@ -61,11 +62,11 @@ namespace Server.Services
             }
         }
 
-        public bool Add(DigitalOutputModel device)
+        public bool Add(DigitalOutput device)
         {
             try
             {
-                context.DeviceModels.Add(device);
+                context.Devices.Add(device);
                 context.SaveChanges();
                 return true;
             }
@@ -77,46 +78,54 @@ namespace Server.Services
 
         public AllDevices GetAll()
         {
-            AllDevices devices = new AllDevices();
-            var result = context.DeviceModels.ToList();
-            foreach (var item in result)
+            lock (obj)
             {
-                if(item is AnalogInputModel)
+                AllDevices devices = new AllDevices();
+                var result = context.Devices.ToList();
+                foreach (var item in result)
                 {
-                    var ai = item as AnalogInputModel;
-                    devices.AnalogInputs.Add(new AnalogInput(ai.TypeOfRegister,ai.Address,ai.Type,ai.Description,ai.MaxValue,ai.MinValue,ai.InitialValue,ai.Value));
+                    if (item is AnalogInput)
+                    {
+                        var ai = item as AnalogInput;
+                        devices.AnalogInputs.Add(new AnalogInput(ai.TypeOfRegister, ai.Address, ai.Type, ai.Description, ai.MaxValue, ai.MinValue, ai.InitialValue, ai.Value));
+                    }
+                    else if (item is AnalogOutput)
+                    {
+                        var ao = item as AnalogOutput;
+                        devices.AnalogOutputs.Add(new AnalogOutput(ao.TypeOfRegister, ao.Address, ao.Type, ao.Description, ao.MaxValue, ao.MinValue, ao.InitialValue, ao.Value));
+                    }
+                    else if (item is DigitalInput)
+                    {
+                        var di = item as DigitalInput;
+                        devices.DigitalInputs.Add(new DigitalInput(di.TypeOfRegister, di.Address, di.Type, di.Description, di.MaxValue, di.MinValue, di.InitialValue, di.Value));
+                    }
+                    else if (item is DigitalOutput)
+                    {
+                        var dout = item as DigitalOutput;
+                        devices.DigitalOutputs.Add(new DigitalOutput(dout.TypeOfRegister, dout.Address, dout.Type, dout.Description, dout.MaxValue, dout.MinValue, dout.InitialValue, dout.Value));
+                    }
                 }
-                else if (item is AnalogOutputModel)
-                {
-                    var ao = item as AnalogOutputModel;
-                    devices.AnalogOutputs.Add(new AnalogOutput(ao.TypeOfRegister, ao.Address, ao.Type, ao.Description, ao.MaxValue, ao.MinValue, ao.InitialValue, ao.Value));
-                }
-                else if (item is DigitalInputModel)
-                {
-                    var di = item as DigitalInputModel;
-                    devices.DigitalInputs.Add(new DigitalInput(di.TypeOfRegister, di.Address, di.Type, di.Description, di.MaxValue, di.MinValue, di.InitialValue, di.Value));
-                }
-                else if (item is DigitalOutputModel)
-                {
-                    var dout = item as DigitalOutputModel;
-                    devices.DigitalOutputs.Add(new DigitalOutput(dout.TypeOfRegister, dout.Address, dout.Type, dout.Description, dout.MaxValue, dout.MinValue, dout.InitialValue, dout.Value));
-                }
+                return devices;
             }
-            return devices;
+            
         }
 
-        public bool Update(AnalogInputModel device, double value)
+        public bool Update(AnalogInput device, double value)
         {
             try
             {
-                var result = context.DeviceModels.SingleOrDefault(x => x.Address == device.Address);
-                if(result != null)
+                lock(obj)
                 {
-                    (result as AnalogInputModel).Value = value;
-                    context.SaveChanges();
-                    return true;
+                    var result = context.Devices.SingleOrDefault(x => x.Address == device.Address);
+                    if (result != null)
+                    {
+                        (result as AnalogInput).Value = value;
+                        context.SaveChanges();
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
+               
             }
             catch
             {
@@ -124,18 +133,23 @@ namespace Server.Services
             }
         }
 
-        public bool Update(AnalogOutputModel device, double value)
+        public bool Update(AnalogOutput device, double value)
         {
             try
             {
-                var result = context.DeviceModels.SingleOrDefault(x => x.Address == device.Address);
-                if (result != null)
+
+                lock(obj)
                 {
-                    (result as AnalogOutputModel).Value = value;
-                    context.SaveChanges();
-                    return true;
+                    var result = context.Devices.SingleOrDefault(x => x.Address == device.Address);
+                    if (result != null)
+                    {
+                        (result as AnalogOutput).Value = value;
+                        context.SaveChanges();
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
+                
             }
             catch
             {
@@ -143,18 +157,22 @@ namespace Server.Services
             }
         }
 
-        public bool Update(DigitalInputModel device, byte value)
+        public bool Update(DigitalInput device, byte value)
         {
             try
             {
-                var result = context.DeviceModels.SingleOrDefault(x => x.Address == device.Address);
-                if (result != null)
+                lock(obj)
                 {
-                    (result as DigitalInputModel).Value = value;
-                    context.SaveChanges();
-                    return true;
+                    var result = context.Devices.SingleOrDefault(x => x.Address == device.Address);
+                    if (result != null)
+                    {
+                        (result as DigitalInput).Value = value;
+                        context.SaveChanges();
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
+               
             }
             catch
             {
@@ -162,18 +180,22 @@ namespace Server.Services
             }
         }
 
-        public bool Update(DigitalOutputModel device, byte value)
+        public bool Update(DigitalOutput device, byte value)
         {
             try
             {
-                var result = context.DeviceModels.SingleOrDefault(x => x.Address == device.Address);
-                if (result != null)
+                lock(obj)
                 {
-                    (result as DigitalOutputModel).Value = value;
-                    context.SaveChanges();
-                    return true;
+                    var result = context.Devices.SingleOrDefault(x => x.Address == device.Address);
+                    if (result != null)
+                    {
+                        (result as DigitalOutput).Value = value;
+                        context.SaveChanges();
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
+                
             }
             catch
             {
@@ -187,16 +209,20 @@ namespace Server.Services
             context.Database.ExecuteSqlCommand("TRUNCATE TABLE AnalogOutputs");
             context.Database.ExecuteSqlCommand("TRUNCATE TABLE DigitalInputs");
             context.Database.ExecuteSqlCommand("TRUNCATE TABLE DigitalOutputs");
-            context.Database.ExecuteSqlCommand("TRUNCATE TABLE DeviceModels");
+            context.Database.ExecuteSqlCommand("TRUNCATE TABLE Devices");
         }
 
-        public BindingList<DeviceModel> GetAllDeviceBindings()
+        public BindingList<Device> GetAllDeviceBindings()
         {
-            var list = context.DeviceModels.ToList();
-            var blist = new BindingList<DeviceModel>();
-            foreach (var item in list)
-                blist.Add(item);
-            return blist;
+            lock(obj)
+            {
+                var list = context.Devices.ToList();
+                var blist = new BindingList<Device>();
+                foreach (var item in list)
+                    blist.Add(item);
+                return blist;
+            }
+           
         }
     }
 }

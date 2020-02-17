@@ -1,7 +1,6 @@
 ﻿using Caliburn.Micro;
 using Common.Commands;
 using Common.Devices;
-using Server.Models;
 using Server.Services;
 using System;
 using System.Collections.Generic;
@@ -24,9 +23,9 @@ namespace Server.WCFService
         {
             var all = repo.GetAllDeviceBindings();
             var result = all.SingleOrDefault(x => x.Address == command.Address);
-            if(result != null && result is AnalogOutputModel)
+            if(result != null && result is AnalogOutput)
             {
-                repo.Update(result as AnalogOutputModel, command.Value);
+                repo.Update(result as AnalogOutput, command.Value);
             }
            
         }
@@ -35,9 +34,9 @@ namespace Server.WCFService
         {
             var all = repo.GetAllDeviceBindings();
             var result = all.SingleOrDefault(x => x.Address == command.Address);
-            if (result != null && result is DigitalOutputModel)
+            if (result != null && result is DigitalOutput)
             {
-                repo.Update(result as DigitalOutputModel, command.Value);
+                repo.Update(result as DigitalOutput, command.Value);
             }
         }
 

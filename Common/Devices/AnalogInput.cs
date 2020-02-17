@@ -4,10 +4,11 @@ namespace Common.Devices
 {
     public class AnalogInput : Device
     {
+        private double value;
         public double MaxValue { get; set; }
         public double MinValue { get; set; }
         public double InitialValue { get; set; }
-        public double Value { get; set; }
+        public double Value { get { return value; } set { this.value = value;OnPropertyChanged("Value"); } }
 
         public AnalogInput() : base() { }
 

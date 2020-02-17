@@ -1,8 +1,11 @@
-﻿
+﻿using Common.Devices;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-using Common.Devices;
-
-namespace Server.Validators
+namespace Client.Validator
 {
     public class DeviceValidator : IDeviceValidator
     {
