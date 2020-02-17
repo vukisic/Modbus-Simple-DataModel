@@ -1,8 +1,11 @@
-﻿using Common.ConfigurationTools;
+﻿using Common.Commands;
+using Common.ConfigurationTools;
 using Common.Converters;
+using Server.WCFService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,45 +15,69 @@ namespace Test_Console
     {
         static void Main(string[] args)
         {
-            //ConfigurationItem item1 = new ConfigurationItem() { Description = "DigIn", FloatingPointPosition = 0, InitialValue = 1, MaxValue = 1, MinValue = 0, NumberOfRegister = 10, StartAddress = 0, Type = "DI", TypeOfRegister = RegisterType.DigitalInput };
-            //Configuration config = new Configuration()
-            //{
-            //    Port = 5000,
-            //    Items = new List<ConfigurationItem>() { item1 }
-            //};
+            IService proxy;
 
-            ConfigurationParser parser = new ConfigurationParser("../../../confguration.json");
-            //parser.Write(config);
+            ChannelFactory<IService> factory = new ChannelFactory<IService>(new NetTcpBinding(), "net.tcp://localhost:5000/WCFService");
+            proxy = factory.CreateChannel();
 
-            var config = parser.Read();
-            Console.WriteLine($"Port: {config.Port}");
-            foreach (var item in config.Items)
-            {
-                Console.WriteLine($"{item.TypeOfRegister} {item.NumberOfRegister} {item.StartAddress} {item.FloatingPointPosition} {item.MinValue} {item.MaxValue} {item.InitialValue} {item.Type} {item.Description}");
-            }
+            int op = 1;
 
-            Console.WriteLine();
+            do
+            {
+                Console.WriteLine("1. All");
+                Console.WriteLine("2. Command Digital");
+                Console.WriteLine("3. Command Analog");
+                Console.WriteLine("0. Exit");
 
-            ConfigurationDevicesConverter converter = new ConfigurationDevicesConverter();
-            var devs = converter.ConvertToDevices(config);
-           
-            foreach (var item in devs.DigitalInputs)
-            {
-                Console.WriteLine($"{item.Type} {item.Address} {item.Value}");
-            }
-            foreach (var item in devs.DigitalOutputs)
-            {
-                Console.WriteLine($"{item.Type} {item.Address} {item.Value}");
-            }
-            foreach (var item in devs.AnalogInputs)
-            {
-                Console.WriteLine($"{item.Type} {item.Address} {item.Value}");
-            }
-            foreach (var item in devs.AnalogOutputs)
-            {
-                Console.WriteLine($"{item.Type} {item.Address} {item.Value}");
-            }
+                op = Int32.Parse(Console.ReadLine());
 
+                switch (op)
+                {
+                    case 1:
+                        var result = proxy.GetAllDevices();
+                        foreach (var item in result.DigitalInputs)
+                        {
+                            Console.WriteLine($"{item.Description} {item.Value}");
+                        }
+                        foreach (var item in result.DigitalOutputs)
+                        {
+                            Console.WriteLine($"{item.Description} {item.Value}");
+                        }
+                        foreach (var item in result.AnalogInputs)
+                        {
+                            Console.WriteLine($"{item.Description} {item.Value}");
+                        }
+                        foreach (var item in result.AnalogOutputs)
+                        {
+                            Console.WriteLine($"{item.Description} {item.Value}");
+                        }
+                        break;
+                    case 2:
+                        Console.WriteLine();
+                        Console.Write("Address");
+                        var address = Int32.Parse(Console.ReadLine());
+                        Console.Write("Value");
+                        var value = Int32.Parse(Console.ReadLine());
+                        DigitalCommand command = new DigitalCommand() { Address = address, Value = (byte)value };
+                        proxy.CommandDigitals(command);
+                        break;
+                    case 3:
+                        Console.WriteLine();
+                        Console.Write("Address");
+                        var addr = Int32.Parse(Console.ReadLine());
+                        Console.Write("Value");
+                        var val = Int32.Parse(Console.ReadLine());
+                        AnalogCommand cmd = new AnalogCommand() { Address = addr, Value = val };
+                        proxy.CommandAnalogs(cmd);
+                        break;
+                    case 0:break;
+                    default: Console.WriteLine("Unknown Command!");break;
+                }
+
+
+            } while (op != 0);
+
+            proxy = null;
             Console.ReadLine();
 
         }

@@ -86,12 +86,12 @@ namespace Server.ViewModels
             var devs = converter.ConvertToDevices(config);
 
             repository.RemoveAll();
-            foreach (var item in devs.DigitalOutputs)
+            foreach (var item in devs.DigitalInputs)
             {
                 Items.Add(item);
                 repository.Add(item);
             }
-            foreach (var item in devs.DigitalInputs)
+            foreach (var item in devs.DigitalOutputs)
             {
                 Items.Add(item);
                 repository.Add(item);

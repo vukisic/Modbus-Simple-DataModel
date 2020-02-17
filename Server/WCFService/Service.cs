@@ -24,7 +24,7 @@ namespace Server.WCFService
         {
             var all = repo.GetAllDeviceBindings();
             var result = all.SingleOrDefault(x => x.Address == command.Address);
-            if(result != null)
+            if(result != null && result is AnalogOutputModel)
             {
                 repo.Update(result as AnalogOutputModel, command.Value);
             }
@@ -35,7 +35,7 @@ namespace Server.WCFService
         {
             var all = repo.GetAllDeviceBindings();
             var result = all.SingleOrDefault(x => x.Address == command.Address);
-            if (result != null)
+            if (result != null && result is DigitalOutputModel)
             {
                 repo.Update(result as DigitalOutputModel, command.Value);
             }
