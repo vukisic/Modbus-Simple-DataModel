@@ -131,6 +131,7 @@ namespace Client.ViewModels
                     (grid.Columns[5].GetCellContent(row) as TextBox).Background = row.Background;
                     (grid.Columns[5].GetCellContent(row) as TextBox).Text = (Items[index] as DigitalInput).Value.ToString();
                 }
+                notificationService.ShowNotification("Error", "Cannot command on input devices!", Notifications.Wpf.NotificationType.Error);
                 return;
             }
             else
