@@ -4,7 +4,7 @@
 	"Items": [
 		{
 			"TypeOfRegister": "DI_REG",
-			"NumberOfRegister": 10,
+			"NumberOfRegister": 2,
 			"StartAddress": 0,
 			"FloatingPointPosition": 0,
 			"MaxValue": 1,
@@ -15,7 +15,7 @@
 		},
 		{
 			"TypeOfRegister": "DO_REG",
-			"NumberOfRegister": 10,
+			"NumberOfRegister": 2,
 			"StartAddress": 1000,
 			"FloatingPointPosition": 0,
 			"MaxValue": 1,
@@ -26,7 +26,7 @@
 		},
 		{
 			"TypeOfRegister": "IN_REG",
-			"NumberOfRegister": 10,
+			"NumberOfRegister": 2,
 			"StartAddress": 2000,
 			"FloatingPointPosition": 0,
 			"MaxValue": 5000,
@@ -37,7 +37,7 @@
 		},
 		{
 			"TypeOfRegister": "HR_INT",
-			"NumberOfRegister": 10,
+			"NumberOfRegister": 2,
 			"StartAddress": 3000,
 			"FloatingPointPosition": 0,
 			"MaxValue": 6000,

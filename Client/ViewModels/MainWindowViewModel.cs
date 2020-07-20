@@ -56,8 +56,7 @@ namespace Client.ViewModels
                 LoadFromConfiguration();
                 factory = new ChannelFactory<IService>(new NetTcpBinding(), $"net.tcp://localhost:{servicePort}/WCFService");
                 proxy = factory.CreateChannel();
-                Connected = true;
-                //Connect to service
+                Connected = false;
             }
             catch (Exception ex)
             {
@@ -171,29 +170,40 @@ namespace Client.ViewModels
         {
             while(endSignal)
             {
-                var devices = proxy.GetAllDevices();
-                grid.Dispatcher.Invoke(() =>
+                try
                 {
-                    Update(devices);
-                });
-                var instance = CommandManager.GetInstance();
-                if(instance.CommandsCount() > 0)
-                {
-                    for(int i = 0; i < instance.CommandsCount();++i)
+                    var devices = proxy.GetAllDevices();
+                    grid.Dispatcher.Invoke(() =>
                     {
-                        var command = instance.GetCommand();
-                        if (command is AnalogCommand)
-                            proxy.CommandAnalogs(command as AnalogCommand);
-                        else
-                            proxy.CommandDigitals(command as DigitalCommand);
+                        Update(devices);
+                    });
+                    var instance = CommandManager.GetInstance();
+                    if (instance.CommandsCount() > 0)
+                    {
+                        for (int i = 0; i < instance.CommandsCount(); ++i)
+                        {
+                            var command = instance.GetCommand();
+                            if (command is AnalogCommand)
+                                proxy.CommandAnalogs(command as AnalogCommand);
+                            else
+                                proxy.CommandDigitals(command as DigitalCommand);
+                        }
                     }
-                }
 
-                devices = proxy.GetAllDevices();
-                grid.Dispatcher.Invoke(() =>
+                    devices = proxy.GetAllDevices();
+                    grid.Dispatcher.Invoke(() =>
+                    {
+                        Update(devices);
+                    });
+                    Connected = true;
+                }
+                catch (Exception)
                 {
-                    Update(devices);
-                });
+
+                    Connected = false;
+                    proxy = factory.CreateChannel();
+                }
+                
 
                 Thread.Sleep(aquisitionInterval);
             }
