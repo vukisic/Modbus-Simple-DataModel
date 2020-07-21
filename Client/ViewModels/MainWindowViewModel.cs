@@ -8,6 +8,7 @@ using Common.Services;
 using Server.WCFService;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -24,22 +25,23 @@ namespace Client.ViewModels
     public class MainWindowViewModel : Conductor<object>, INotifyPropertyChanged
     {
         #region Properties
-        private BindingList<Device> items;
-        public BindingList<Device> Items { get { return items; } set { items = value; OnPropertyChanged("Items"); } }
+        private ObservableCollection<Device> items;
+        public ObservableCollection<Device> Items { get { return items; } set { items = value; OnPropertyChanged("Items"); } }
 
         private int servicePort;
-        private int aquisitionInterval;
+        private int acquisitionInterval;
         private ChannelFactory<IService> factory;
         private IService proxy;
-        private Thread aquisitor;
-        private bool endSignal = true;
 
         private INotificationService notificationService;
         private CommandExecutor commandExecutor;
         private CommandProcessor commandProcessor;
         private IDeviceValidator validator;
+        private Acquisitor acquisitor;
         private DataGrid grid;
+        private AlarmProcessor alarmProcessor;
         private bool connected;
+        private event EventHandler<EventUpdateArgs> UpdateEvent;
         public bool Connected { get { return connected; } set { connected = value; OnPropertyChanged("Connected"); } }
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
@@ -50,10 +52,12 @@ namespace Client.ViewModels
         {
             this.validator = validator;
             this.notificationService = notificationService;
-            Items = new BindingList<Device>();
+            Items = new ObservableCollection<Device>();
             Connected = false;
             commandExecutor = new CommandExecutor();
             commandProcessor = new CommandProcessor(notificationService, validator);
+            alarmProcessor = new AlarmProcessor();
+            
 
             try
             {
@@ -61,6 +65,8 @@ namespace Client.ViewModels
                 factory = new ChannelFactory<IService>(new NetTcpBinding(), $"net.tcp://localhost:{servicePort}/WCFService");
                 proxy = factory.CreateChannel();
                 Connected = false;
+                UpdateEvent += MainWindowViewModel_UpdateEvent;
+                acquisitor = new Acquisitor(Items, acquisitionInterval, factory, commandExecutor, Connected);
             }
             catch (Exception ex)
             {
@@ -77,7 +83,7 @@ namespace Client.ViewModels
             ConfigurationParser parser = new ConfigurationParser("../../../confguration.json");
             var config = parser.Read();
             servicePort = config.Port;
-            aquisitionInterval = config.AquisitionInterval * 1000;
+            acquisitionInterval = config.AquisitionInterval * 1000;
             var converter = new ConfigurationDevicesConverter();
             var devs = converter.ConvertToDevices(config);
 
@@ -98,21 +104,19 @@ namespace Client.ViewModels
                 Items.Add(item);
             }
         }
-
-        public void CheckRowStatus()
-        {
-            foreach (var item in Items)
-            {
-                var row = (DataGridRow)grid.ItemContainerGenerator.ContainerFromItem(item);
-                if (validator.Validate(item as Device))
-                    row.Background = Brushes.MediumSeaGreen;
-                else
-                    row.Background = Brushes.IndianRed;
-            }
-        }
         #endregion
 
         #region Commands & Events
+
+        private void MainWindowViewModel_UpdateEvent(object sender, EventUpdateArgs e)
+        {
+            grid.Dispatcher.Invoke(() =>
+            {
+                if (e.Devices != null)
+                    Update(e.Devices);
+            });
+            Connected = e.Connected;
+        }
 
         public void SaveChanges(DataGridCellEditEndingEventArgs args)
         {
@@ -128,55 +132,36 @@ namespace Client.ViewModels
             }
         }
 
-        private void ResetCell(DataGrid grid, Device device , int index)
+     
+
+        public void Load(RoutedEventArgs args)
+        {
+            grid = ((args.OriginalSource as Grid).Children[0] as DataGrid);
+            CheckRowStatus();
+            acquisitor.Start(UpdateEvent);
+            notificationService.ShowNotification("Client", $"Started", Notifications.Wpf.NotificationType.Success);
+        }
+
+        #endregion
+
+        #region Update
+        private void ResetCell(DataGrid grid, Device device, int index)
         {
             var row = (DataGridRow)grid.ItemContainerGenerator.ContainerFromItem(device);
             (grid.Columns[5].GetCellContent(row) as TextBox).Background = row.Background;
             (grid.Columns[5].GetCellContent(row) as TextBox).Text = (Items[index] as AnalogInput).Value.ToString();
         }
 
-        public void Load(RoutedEventArgs args)
+        public void CheckRowStatus()
         {
-            grid = ((args.OriginalSource as Grid).Children[0] as DataGrid);
-            CheckRowStatus();
-            aquisitor = new Thread(Aquisitor);
-            aquisitor.Start();
-            notificationService.ShowNotification("Client", $"Started", Notifications.Wpf.NotificationType.Success);
-        }
-
-        public void Close(object args)
-        {
-            endSignal = false;
-            aquisitor.Abort();
-            aquisitor = null;
-        }
-        #endregion
-
-        #region Thread
-        public void Aquisitor()
-        {
-            while(endSignal)
+            foreach (var item in Items)
             {
-                try
-                {
-                    var devices = proxy.GetAllDevices();
-                    commandExecutor.ExecuteCommands(proxy);
-                    devices = proxy.GetAllDevices();
-                    grid.Dispatcher.Invoke(() =>
-                    {
-                        Update(devices);
-                    });
-                    Connected = true;
-                }
-                catch (Exception)
-                {
-
-                    Connected = false;
-                    proxy = factory.CreateChannel();
-                }
-                
-
-                Thread.Sleep(aquisitionInterval);
+                item.Alarm = alarmProcessor.ProcessDevice(item);
+                var row = (DataGridRow)grid.ItemContainerGenerator.ContainerFromItem(item);
+                if (item.Alarm.Equals(AlarmType.NO_ALARM))
+                    row.Background = Brushes.MediumSeaGreen;
+                else
+                    row.Background = Brushes.IndianRed;
             }
         }
 
@@ -221,5 +206,9 @@ namespace Client.ViewModels
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
+        public void Close(object args)
+        {
+            acquisitor.Dispose();
+        }
     }
 }

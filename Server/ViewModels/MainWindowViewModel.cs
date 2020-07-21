@@ -51,7 +51,7 @@ namespace Server.ViewModels
 
         #endregion
 
-        public MainWindowViewModel(Common.Devices.IDeviceValidator validator, INotificationService notification, IDataRepository repo)
+        public MainWindowViewModel(IDeviceValidator validator, INotificationService notification, IDataRepository repo)
         {
             this.validator = validator;
             this.notificationService = notification;
@@ -129,7 +129,6 @@ namespace Server.ViewModels
             Simulation = true;
             simulationThread = new Thread(ThreadFunction);
             simulationThread.Start();
-
         }
 
         public void OnStop()

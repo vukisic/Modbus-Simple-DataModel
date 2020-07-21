@@ -117,6 +117,10 @@
     <Compile Include="Migrations\202002172116292_Initial.designer.cs">
       <DependentUpon>202002172116292_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202007211448194_Alarm.cs" />
+    <Compile Include="Migrations\202007211448194_Alarm.designer.cs">
+      <DependentUpon>202007211448194_Alarm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Services\DataRepository.cs" />
     <Compile Include="Services\IDataRepository.cs" />
@@ -142,6 +146,9 @@
     </Compile>
     <EmbeddedResource Include="Migrations\202002172116292_Initial.resx">
       <DependentUpon>202002172116292_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202007211448194_Alarm.resx">
+      <DependentUpon>202007211448194_Alarm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

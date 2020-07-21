@@ -7,6 +7,7 @@ namespace Common.Devices
 {
     public class Device : BindableBase
     {
+        private string alarm;
         public string TypeOfRegister { get; set; }
 
         [Key]
@@ -14,6 +15,7 @@ namespace Common.Devices
         public int Address { get; set; }
         public string Type { get; set; }
         public string Description { get; set; }
+        public string Alarm { get { return alarm; } set { alarm = value; OnPropertyChanged("Alarm"); } }
 
         public Device() { }
         public Device(string typeOfRegister, int address, string type, string description)
@@ -22,6 +24,7 @@ namespace Common.Devices
             Address = address;
             Type = type;
             Description = description;
+            Alarm = AlarmType.NO_ALARM;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
