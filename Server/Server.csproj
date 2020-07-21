@@ -120,13 +120,10 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Services\DataRepository.cs" />
     <Compile Include="Services\IDataRepository.cs" />
-    <Compile Include="Validators\DeviceValidator.cs" />
-    <Compile Include="Validators\IDeviceValidator.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\MainWindowView.xaml.cs">
       <DependentUpon>MainWindowView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WCFService\IService.cs" />
     <Compile Include="WCFService\Service.cs" />
   </ItemGroup>
   <ItemGroup>

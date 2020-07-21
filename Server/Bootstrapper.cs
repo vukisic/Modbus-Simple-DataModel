@@ -1,7 +1,7 @@
 ﻿using Caliburn.Micro;
+using Common.Devices;
 using Common.Services;
 using Server.Services;
-using Server.Validators;
 using Server.ViewModels;
 using System;
 using System.Collections.Generic;

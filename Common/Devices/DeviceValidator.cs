@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Client.Validator
+namespace Common.Devices
 {
     public class DeviceValidator : IDeviceValidator
     {

@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using Common;
 using Common.Commands;
 using Common.Devices;
 using Server.Services;

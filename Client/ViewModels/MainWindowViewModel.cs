@@ -1,5 +1,5 @@
 ﻿using Caliburn.Micro;
-using Client.Validator;
+using Common;
 using Common.Commands;
 using Common.ConfigurationTools;
 using Common.Converters;
@@ -35,6 +35,8 @@ namespace Client.ViewModels
         private bool endSignal = true;
 
         private INotificationService notificationService;
+        private CommandExecutor commandExecutor;
+        private CommandProcessor commandProcessor;
         private IDeviceValidator validator;
         private DataGrid grid;
         private bool connected;
@@ -50,6 +52,8 @@ namespace Client.ViewModels
             this.notificationService = notificationService;
             Items = new BindingList<Device>();
             Connected = false;
+            commandExecutor = new CommandExecutor();
+            commandProcessor = new CommandProcessor(notificationService, validator);
 
             try
             {
@@ -115,38 +119,20 @@ namespace Client.ViewModels
             var device = args.EditingElement.DataContext as Device;
             var value = Convert.ToDouble((args.EditingElement as TextBox).Text);
             var index = args.Row.GetIndex();
-            var row = (DataGridRow)grid.ItemContainerGenerator.ContainerFromItem(device);
-
-            if(device is AnalogInput || device is DigitalInput)
+            
+            if(!commandProcessor.ProcessCommand(device, value))
             {
-                if(device is AnalogInput)
-                {
-                    args.Cancel = true;
-                    (grid.Columns[5].GetCellContent(row) as TextBox).Background = row.Background;
-                    (grid.Columns[5].GetCellContent(row) as TextBox).Text = (Items[index] as AnalogInput).Value.ToString();
-                }
-                else
-                {
-                    args.Cancel = true;
-                    (grid.Columns[5].GetCellContent(row) as TextBox).Background = row.Background;
-                    (grid.Columns[5].GetCellContent(row) as TextBox).Text = (Items[index] as DigitalInput).Value.ToString();
-                }
+                args.Cancel = true;
+                ResetCell(grid, device, index);
                 notificationService.ShowNotification("Error", "Cannot command on input devices!", Notifications.Wpf.NotificationType.Error);
-                return;
             }
-            else
-            {
-                if(device is AnalogOutput)
-                {
-                    var analogCommand = new AnalogCommand() { Address = device.Address, Value = value };
-                    CommandManager.GetInstance().PutCommand(analogCommand);
-                }
-                else
-                {
-                    var digitalCommand = new DigitalCommand() { Address = device.Address, Value = (byte)value };
-                    CommandManager.GetInstance().PutCommand(digitalCommand);
-                }
-            }
+        }
+
+        private void ResetCell(DataGrid grid, Device device , int index)
+        {
+            var row = (DataGridRow)grid.ItemContainerGenerator.ContainerFromItem(device);
+            (grid.Columns[5].GetCellContent(row) as TextBox).Background = row.Background;
+            (grid.Columns[5].GetCellContent(row) as TextBox).Text = (Items[index] as AnalogInput).Value.ToString();
         }
 
         public void Load(RoutedEventArgs args)
@@ -174,23 +160,7 @@ namespace Client.ViewModels
                 try
                 {
                     var devices = proxy.GetAllDevices();
-                    grid.Dispatcher.Invoke(() =>
-                    {
-                        Update(devices);
-                    });
-                    var instance = CommandManager.GetInstance();
-                    if (instance.CommandsCount() > 0)
-                    {
-                        for (int i = 0; i < instance.CommandsCount(); ++i)
-                        {
-                            var command = instance.GetCommand();
-                            if (command is AnalogCommand)
-                                proxy.CommandAnalogs(command as AnalogCommand);
-                            else
-                                proxy.CommandDigitals(command as DigitalCommand);
-                        }
-                    }
-
+                    commandExecutor.ExecuteCommands(proxy);
                     devices = proxy.GetAllDevices();
                     grid.Dispatcher.Invoke(() =>
                     {

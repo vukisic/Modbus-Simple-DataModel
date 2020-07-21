@@ -2,7 +2,6 @@
 using Common.ConfigurationTools;
 using Common.Devices;
 using Server.Services;
-using Server.Validators;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -18,6 +17,7 @@ using System.Net;
 using Server.WCFService;
 using Common.Converters;
 using Common.Services;
+using Common;
 
 namespace Server.ViewModels
 {
@@ -30,7 +30,7 @@ namespace Server.ViewModels
         private int servicePort;
         private Common.WCF.WCFService service;
 
-        private IDeviceValidator validator;
+        private Common.Devices.IDeviceValidator validator;
         private INotificationService notificationService;
         private IDataRepository repository;
         private DataGrid grid;
@@ -51,7 +51,7 @@ namespace Server.ViewModels
 
         #endregion
 
-        public MainWindowViewModel(IDeviceValidator validator, INotificationService notification, IDataRepository repo)
+        public MainWindowViewModel(Common.Devices.IDeviceValidator validator, INotificationService notification, IDataRepository repo)
         {
             this.validator = validator;
             this.notificationService = notification;

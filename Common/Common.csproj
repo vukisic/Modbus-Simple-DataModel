@@ -52,6 +52,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandExecutor.cs" />
+    <Compile Include="CommandProcessor.cs" />
     <Compile Include="Commands\AnalogCommand.cs" />
     <Compile Include="Commands\CommandManager.cs" />
     <Compile Include="Commands\DeviceCommand.cs" />
@@ -69,11 +71,14 @@
     <Compile Include="Devices\AnalogOutput.cs" />
     <Compile Include="Devices\AllDevices.cs" />
     <Compile Include="Devices\Device.cs" />
+    <Compile Include="Devices\DeviceValidator.cs" />
     <Compile Include="Devices\DigitalInput.cs" />
     <Compile Include="Devices\DigitalOutput.cs" />
+    <Compile Include="Devices\IDeviceValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\INotificationService.cs" />
     <Compile Include="Services\NotificationService.cs" />
+    <Compile Include="WCF\IService.cs" />
     <Compile Include="WCF\WCFService.cs" />
   </ItemGroup>
   <ItemGroup>

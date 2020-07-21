@@ -7,7 +7,7 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.WCFService
+namespace Common
 {
     [ServiceContract]
     public interface IService
