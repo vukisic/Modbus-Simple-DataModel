@@ -1,5 +1,6 @@
 ﻿using Common.Commands;
 using Common.Devices;
+using Common.Logger;
 using Common.Services;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,14 @@ namespace Common
         private INotificationService notificationService;
         private IDeviceValidator validator;
         private CommandExecutor commandExecutor;
+        private ILogger logger;
 
-        public CommandProcessor(INotificationService notificationService, IDeviceValidator validator)
+        public CommandProcessor(INotificationService notificationService, IDeviceValidator validator, CommandExecutor executor, ILogger logger)
         {
             this.notificationService = notificationService;
             this.validator = validator;
-            this.commandExecutor = new CommandExecutor();
+            this.logger = logger;
+            this.commandExecutor = executor;
         }
 
         public bool ProcessCommand(Device device, double value)
@@ -37,6 +40,7 @@ namespace Common
                 else
                 {
                     notificationService.ShowNotification("Error", "Value out of range!", Notifications.Wpf.NotificationType.Error);
+                    logger.Warning($"Value {value} out of range for device at address {device.TypeOfRegister}{device.Address}");
                 }
                 return true;
             }

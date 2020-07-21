@@ -1,0 +1,31 @@
+﻿<Controls:MetroWindow x:Class="Client.Views.LogWindowView"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"  
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client.Views"
+        mc:Ignorable="d"
+        Title="LogWindowView" Height="450" Width="600"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <DataGrid VirtualizingStackPanel.IsVirtualizing="False" CanUserSortColumns="False" ItemsSource="{Binding Items, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" ScrollViewer.CanContentScroll="False"  x:Name="dataGrid" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" ColumnWidth="*" AutoGenerateColumns="False" IsReadOnly="False" Margin="10,10,10,5">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding}"  Header="Log" IsReadOnly="True" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Controls:MetroWindow>

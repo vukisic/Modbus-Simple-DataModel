@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using Client.ViewModels;
 using Common.Devices;
+using Common.Logger;
 using Common.Services;
 using System;
 using System.Collections.Generic;

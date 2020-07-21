@@ -1,4 +1,5 @@
 ﻿using Common.Commands;
+using Common.Logger;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,17 @@ namespace Common
 {
     public class CommandExecutor
     {
+        private ILogger logger;
+        public CommandExecutor(ILogger logger)
+        {
+            this.logger = logger;
+        }
         public void PutCommand(AnalogCommand command) => CommandManager.GetInstance().PutCommand(command);
         public void PutCommand(DigitalCommand command) => CommandManager.GetInstance().PutCommand(command);
 
         public void ExecuteCommands(IService proxy)
         {
+            logger.Debug("Executing commands!");
             var instance = CommandManager.GetInstance();
             if (instance.CommandsCount() > 0)
             {

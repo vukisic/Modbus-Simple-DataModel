@@ -1,0 +1,16 @@
+[INFO] - (7/21/2020 10:50:45 PM) : Device DI_REG-0 Value: 1 -> ABNORMAL
+[INFO] - (7/21/2020 10:50:45 PM) : Device DI_REG-1 Value: 1 -> ABNORMAL
+[INFO] - (7/21/2020 10:50:45 PM) : Device DO_REG-1000 Value: 0 -> NO_ALARM
+[INFO] - (7/21/2020 10:50:45 PM) : Device DO_REG-1001 Value: 0 -> NO_ALARM
+[INFO] - (7/21/2020 10:50:45 PM) : Device IN_REG-2000 Value: 1200 -> NO_ALARM
+[INFO] - (7/21/2020 10:50:45 PM) : Device IN_REG-2001 Value: 1200 -> NO_ALARM
+[INFO] - (7/21/2020 10:50:45 PM) : Device HR_INT-3000 Value: 500 -> NO_ALARM
+[INFO] - (7/21/2020 10:50:45 PM) : Device HR_INT-3001 Value: 500 -> NO_ALARM
+[INFO] - (7/21/2020 10:50:45 PM) : -> Acquisition <-
+[ERROR] - (7/21/2020 10:50:47 PM) : Not Conneted!
+[INFO] - (7/21/2020 10:50:52 PM) : -> Acquisition <-
+[ERROR] - (7/21/2020 10:50:55 PM) : Not Conneted!
+[INFO] - (7/21/2020 10:51:00 PM) : -> Acquisition <-
+[ERROR] - (7/21/2020 10:51:02 PM) : Not Conneted!
+[INFO] - (7/21/2020 10:51:07 PM) : -> Acquisition <-
+[ERROR] - (7/21/2020 10:51:09 PM) : Not Conneted!

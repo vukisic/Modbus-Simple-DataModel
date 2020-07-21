@@ -1,6 +1,6 @@
 {
 	"Port": 5000,
-	"AquisitionInterval": 1,
+	"AquisitionInterval": 5,
 	"Items": [
 		{
 			"TypeOfRegister": "DI_REG",

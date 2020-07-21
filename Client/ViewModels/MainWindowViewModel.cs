@@ -3,7 +3,9 @@ using Common;
 using Common.Commands;
 using Common.ConfigurationTools;
 using Common.Converters;
+using Common.Core;
 using Common.Devices;
+using Common.Logger;
 using Common.Services;
 using Server.WCFService;
 using System;
@@ -19,6 +21,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static Common.Core.GUICommand;
 
 namespace Client.ViewModels
 {
@@ -42,23 +45,31 @@ namespace Client.ViewModels
         private AlarmProcessor alarmProcessor;
         private bool connected;
         private event EventHandler<EventUpdateArgs> UpdateEvent;
+        private AutomationManager automationManager;
+        private ILogger logger;
+        private IWindowManager manager;
         public bool Connected { get { return connected; } set { connected = value; OnPropertyChanged("Connected"); } }
+        public GUIICommand LogCommand { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         #endregion
 
-        public MainWindowViewModel(IDeviceValidator validator, INotificationService notificationService)
+        public MainWindowViewModel(IDeviceValidator validator, INotificationService notificationService, IWindowManager manager)
         {
             this.validator = validator;
+            this.logger = new TextLogger("../../../log.txt", true);
             this.notificationService = notificationService;
             Items = new ObservableCollection<Device>();
             Connected = false;
-            commandExecutor = new CommandExecutor();
-            commandProcessor = new CommandProcessor(notificationService, validator);
-            alarmProcessor = new AlarmProcessor();
+            this.manager = manager;
+            LogCommand = new GUIICommand(ShowLogs);
+            commandExecutor = new CommandExecutor(logger);
+            commandProcessor = new CommandProcessor(notificationService, validator, commandExecutor, logger);
+            alarmProcessor = new AlarmProcessor(logger);
+            automationManager = new AutomationManager(commandExecutor, Items, logger);
             
-
+            
             try
             {
                 LoadFromConfiguration();
@@ -66,7 +77,7 @@ namespace Client.ViewModels
                 proxy = factory.CreateChannel();
                 Connected = false;
                 UpdateEvent += MainWindowViewModel_UpdateEvent;
-                acquisitor = new Acquisitor(Items, acquisitionInterval, factory, commandExecutor, Connected);
+                acquisitor = new Acquisitor(Items, acquisitionInterval, factory, commandExecutor, logger, automationManager);
             }
             catch (Exception ex)
             {
@@ -75,6 +86,11 @@ namespace Client.ViewModels
             }
 
 
+        }
+
+        public void ShowLogs()
+        {
+            manager.ShowWindow(new LogWindowViewModel(logger));
         }
 
         #region Helpers

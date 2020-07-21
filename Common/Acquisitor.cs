@@ -1,4 +1,5 @@
 ﻿using Common.Devices;
+using Common.Logger;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,14 +24,18 @@ namespace Common
         private int timeout;
         private ObservableCollection<Device> devices;
         private bool stop = false;
+        private AutomationManager automationManager;
+        private ILogger logger;
 
-        public Acquisitor(ObservableCollection<Device> devices, int timeout, ChannelFactory<IService> factory, CommandExecutor executor, bool connected)
+        public Acquisitor(ObservableCollection<Device> devices, int timeout, ChannelFactory<IService> factory, CommandExecutor executor, ILogger logger, AutomationManager automation)
         {
             this.devices = devices;
             this.timeout = timeout;
             this.factory = factory;
             this.executor = executor;
-            this.connected = connected;
+            this.connected = false;
+            this.automationManager = automation;
+            this.logger = logger;
         }
 
         public void Start(EventHandler<EventUpdateArgs> update)
@@ -64,15 +69,18 @@ namespace Common
         {
             try
             {
+                logger.Info("-> Acquisition <-");
                 var devices = proxy.GetAllDevices();
+                logger.Info("Connected");
+                connected = true;
+                automationManager.DoWork();
                 executor.ExecuteCommands(proxy);
                 devices = proxy.GetAllDevices();
-                connected = true;
                 update?.Invoke(this, new EventUpdateArgs() { Devices = devices, Connected = connected});
             }
             catch (Exception)
             {
-
+                logger.Error("Not Conneted!");
                 connected = false;
                 proxy = factory.CreateChannel();
                 update?.Invoke(this, new EventUpdateArgs() { Devices = null, Connected = connected });
